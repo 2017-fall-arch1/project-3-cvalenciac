@@ -1,0 +1,20 @@
+CPU 		= msp430g2553
+CFLAGS 		= -mmcu=${CPU} -0s -I../h
+LDFLAGS 	= -L../lib -L/opt/ti/msp430_gcc/include
+
+#switch the compiler (for the inernal make rules)
+CC 	= msp430-elf-gcc
+AS 	= msp430-elf-gcc -mmu=${CPU} -c
+
+all:pong.elf
+
+#aditional rules for files
+pong.elf: ${COMMON_OBJECTS} pd_interrupt_handler.  pong.o  wdt_handler.o
+	${CC} -mmu=${CPU} -o $@ $^ -L../lib -lTimer -lLcd -lShape -lCircle -lp2sw
+load: pong.elf
+	mspdebug rf2500 "prog $^"
+
+clean:
+	rm -f *.o *.elf *.*~
+
+
